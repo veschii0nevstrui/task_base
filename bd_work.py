@@ -2,11 +2,19 @@ import json
 import mysql.connector
 
 def connect():
+	with open("param") as f:
+		debug = f.read()
+
+	if debug == 'test':
+		db = 'task_base_test'
+	else:
+		db = 'task_base'
+
 	conn = mysql.connector.connect(
 		user='nevstrui',
 		password='12345',
 		host='127.0.0.1',
-		database='task_base'
+		database=db
 	)
 	return conn
 
@@ -44,7 +52,7 @@ def add_task(task):
 			tutorial: 			"task tutorial"	#TODO take tex-like format
 			source:				"snark-readable task source",
 			todo:				"description of future work with task"
-			tags: 				"list of tags"
+			tags: 				"list of id"
 		}
 	'''
 	tags = task.pop("tags", None)
@@ -61,12 +69,8 @@ def add_task(task):
 	if tags != None:
 		task_id = cursor.lastrowid
 		for tag in tags:
-			find_command = 'SELECT id FROM tags WHERE id = %s'
-			cursor.execute(find_command, [tag])
-			tag_id = cursor.fetchone()[0]
-
 			insert_tag = 'INSERT INTO tags_task (task_id, tag_id) VALUES (%s, %s)'
-			cursor.execute(insert_tag, [task_id, tag_id])
+			cursor.execute(insert_tag, [task_id, tag])
 
 
 	conn.commit()
