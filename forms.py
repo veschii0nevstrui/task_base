@@ -20,7 +20,7 @@ class TaskForm(FlaskForm):
 	tags = FieldList(FormField(Tag), min_entries=1, max_entries=20) #!!!
 	submit = SubmitField("Submit")
 
-	white_list = set(["name", "complexity", "short_statement", "statement", "tutorial", "source", "tags"])
+	white_list = set(["name", "complexity", "short_statement", "statement", "tutorial", "source", "tags", "todo"])
 	template = "add_task.html"
 	
 	def add(self, d):
