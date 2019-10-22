@@ -4,7 +4,7 @@ from wtforms.validators import DataRequired
 from bd_work import add_task, add_tag, tag_list
 
 class Tag(FlaskForm):
-	tag = SelectField("Tag: ", validators=[DataRequired()], coerce=int)
+	tag = SelectField("Tag: ", validators=[DataRequired()], coerce=int, choices=[(0, "")] + tag_list())
 	def set_choices(self):
 		self.tag.choices = [(0, "")] + tag_list()
 

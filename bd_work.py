@@ -1,5 +1,5 @@
 import json
-import mysql.connector
+import pymysql
 
 def connect():
 	with open("param") as f:
@@ -10,11 +10,12 @@ def connect():
 	else:
 		db = 'task_base'
 
-	conn = mysql.connector.connect(
+	conn = pymysql.connect(
 		user='nevstrui',
 		password='12345',
 		host='127.0.0.1',
-		database=db
+		database=db,
+		cursorclass=pymysql.cursors.DictCursor
 	)
 	return conn
 
@@ -24,14 +25,14 @@ def tag_list():
 
 	cursor.execute("SELECT * FROM tags")
 
-	ans = cursor.fetchall()
+	ans = [(tag['id'], tag['tag']) for tag in cursor.fetchall()]
 	
 	cursor.close()
 	conn.close()
 
 	return ans
 
-def task_list(tag_list):
+def task_dict(tag_list):
 	conn = connect()
 	cursor = conn.cursor()
 
@@ -41,7 +42,7 @@ def task_list(tag_list):
 		s = ""
 
 	query = '''
-		SELECT tasks.id, name, short_statement, GROUP_CONCAT(tags.tag SEPARATOR ", "), complexity, source, todo 
+		SELECT tasks.id, name, short_statement, GROUP_CONCAT(tags.tag SEPARATOR ", ") as tags, complexity, source, todo 
 		FROM (
 			SELECT task_id FROM tags_task %s
 			GROUP BY task_id
@@ -55,6 +56,7 @@ def task_list(tag_list):
 	cursor.execute(query)
 	ans = cursor.fetchall()
 
+
 	cursor.close()
 	conn.close()
 
@@ -64,17 +66,17 @@ def get_task(t_id):
 	conn = connect()
 	cursor = conn.cursor()
 
-	cursor.execute("SELECT id, name, statement, tutorial, complexity, source, todo FROM tasks WHERE id=%s", [t_id])
+	cursor.execute("SELECT id, name, short_statement, statement, tutorial, complexity, source, todo FROM tasks WHERE id=%s", [t_id])
 	ans = cursor.fetchall()
 
 	cursor.execute('''
-		SELECT tag
+		SELECT tags.id, tag
 		FROM 
 			tasks LEFT JOIN tags_task ON tasks.id = tags_task.task_id
 			LEFT JOIN tags ON tags_task.tag_id = tags.id
 		WHERE tasks.id = %s
 		''', [t_id])
-	tags = [i[0] for i in cursor.fetchall()]
+	tags = cursor.fetchall()
 
 	cursor.close()
 	conn.close()
@@ -122,6 +124,23 @@ def add_task(task):
 			insert_tag = 'INSERT INTO tags_task (task_id, tag_id) VALUES (%s, %s)'
 			cursor.execute(insert_tag, [task_id, tag])
 
+
+	conn.commit()
+
+	cursor.close()
+	conn.close()
+
+def update_task(task, t_id):
+	tags = task.pop("tags", None)
+
+	updates = ', '.join([str(key) + "='" + str(value) + "'" for key, value in task.items()])
+	query = "UPDATE tasks SET %s WHERE id=%s" % (updates, t_id)
+
+	conn = connect()
+	cursor = conn.cursor()
+
+	print(query)
+	cursor.execute(query)
 
 	conn.commit()
 

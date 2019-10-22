@@ -180,11 +180,16 @@
 		</tr>
 		{% for task in tasks %}
 			<tr>
-			{% for i in task %}
-				<td> {{i}} </td>
-			{% endfor %}
-			<td><a href="task/{{task[0]}}">Link</a>
-			</td>
+				<td>{{ task['id'] }}</td>
+				<td>{{ task['name'] }}</td>
+				<td>{{ task['short_statement'] }}</td>
+				<td>{{ task['tags'] }}</td>
+				<td>{{ task['complexity'] }}</td>
+				<td>{{ task['source'] }}</td>
+				<td>{{ task['todo'] }}</td>
+
+				<td><a href="task/{{task['id']}}">Link</a>
+				</td>
 			</tr>
 		{% endfor %}
 	</table>

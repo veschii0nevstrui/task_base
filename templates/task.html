@@ -11,22 +11,23 @@
     </style>
 </head>
 <body>
-	<p class = "title">{{task[0]}} {{task[1]}}</p>
-	<p>{{task[2]}}</p>
+	<p class = "title">{{task['id']}} {{task['name']}}</p>
+	<p>{{task['statement']}}</p>
 	<p class = "title">Разбор</p>
-	<p>{{task[3]}}</p>
+	<p>{{task['tutorial']}}</p>
 	<p class = "title">Сложность</p>
-	<p>{{task[4]}}</p>
+	<p>{{task['complexity']}}</p>
 	<p class = "title">Source</p>
-	<p>{{task[5]}}</p>
+	<p>{{task['source']}}</p>
 	<p class = "title">TODO</p>
-	<p>{{task[6]}}</p>
+	<p>{{task['todo']}}</p>
 	<p class = "title">Tags</p>
 	<p>
 		{% for tag in tags %}
-			{{tag}}
+			{{tag['tag']}}
 		{% endfor %}
 	</p>
+	<p><a href="/edit_task/{{task['id']}}">Редактировать задачу</a></p>
 
 </body>
 </html>

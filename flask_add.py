@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
-from forms import TaskForm, TagForm, TagsForm
-from bd_work import task_list, get_task
+from forms import TaskForm, TagForm, TagsForm, Tag
+from bd_work import task_dict, get_task, tag_list, update_task
 import argparse
 import sys
 
@@ -43,13 +43,40 @@ def r_tasks():
 	if form.validate_on_submit():
 		tag_list = [str(i['tag']) for i in _to_dict(form)["tags"]]
 	
-	ans = task_list(tag_list)
+	ans = task_dict(tag_list)
 	return render_template("table_task.html", tasks=ans, form=form)
 
 @app.route('/task/<t_id>')
 def render_task(t_id):
 	task, tags = get_task(t_id)
 	return render_template("task.html", task=task, tags=tags)
+
+@app.route('/edit_task/<t_id>', methods=['get', 'post'])
+def edit_task(t_id):
+	task, tags = get_task(t_id)
+	form = TaskForm(
+		name = "Настя самая замечательная",
+		statement = task['statement'],
+		short_statement = task['short_statement'],
+		todo = task['todo'],
+		tutorial = task['tutorial'],
+		complexity = task['complexity'],
+		source = task['source'],
+		tags = [Tag(tag=2)]
+	)
+
+	print(form.tags.data)
+
+	for tag in form.tags:
+		tag.set_choices()
+
+	if form.validate_on_submit():
+		d = _to_dict(form)
+		print(d)
+		update_task(d, t_id)
+		return redirect(url_for('render_task', t_id=t_id))
+
+	return render_template(form.template, form=form)
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="Just parse")
