@@ -26,14 +26,14 @@ def add(obj):
 		form.add(d)
 		return redirect(url_for('add', obj=obj))
 
-	return render_template(form.template, form=form)
+	return render_template(form.template, form=form, name="Добавить задачу")
 
 @app.route('/')
 def main():
 	return render_template("refs.html")
 
 @app.route('/tasks', methods=['get', 'post'])
-def r_tasks():
+def table_tasks():
 	form = TagsForm()
 	for tag in form.tags:
 		tag.set_choices()
@@ -61,22 +61,26 @@ def edit_task(t_id):
 		todo = task['todo'],
 		tutorial = task['tutorial'],
 		complexity = task['complexity'],
-		source = task['source'],
-		tags = [Tag(tag=2)]
+		source = task['source']
 	)
-
-	print(form.tags.data)
 
 	for tag in form.tags:
 		tag.set_choices()
 
 	if form.validate_on_submit():
 		d = _to_dict(form)
-		print(d)
 		update_task(d, t_id)
 		return redirect(url_for('render_task', t_id=t_id))
 
-	return render_template(form.template, form=form)
+	form.tags.pop_entry()
+
+	for tag in tags:
+		t = Tag()
+		t.tag = tag['id']
+		t.csrf_token = form.csrf_token
+		form.tags.append_entry(t)
+
+	return render_template(form.template, form=form, name="Редактировать задачу")
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="Just parse")
