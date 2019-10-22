@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{task[1]}}</title>
+    <style>
+    	.title {
+    		text-align: center;
+    		font-weight: bold;
+    	}
+    </style>
+</head>
+<body>
+	<p class = "title">{{task[0]}} {{task[1]}}</p>
+	<p>{{task[2]}}</p>
+	<p class = "title">Разбор</p>
+	<p>{{task[3]}}</p>
+	<p class = "title">Сложность</p>
+	<p>{{task[4]}}</p>
+	<p class = "title">Source</p>
+	<p>{{task[5]}}</p>
+	<p class = "title">TODO</p>
+	<p>{{task[6]}}</p>
+	<p class = "title">Tags</p>
+	<p>
+		{% for tag in tags %}
+			{{tag}}
+		{% endfor %}
+	</p>
+
+</body>
+</html>

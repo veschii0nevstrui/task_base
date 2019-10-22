@@ -8,7 +8,6 @@ class Tag(FlaskForm):
 	def set_choices(self):
 		self.tag.choices = [(0, "")] + tag_list()
 
-
 class TaskForm(FlaskForm):
 	name = StringField("Name: ", validators=[DataRequired()])
 	short_statement = TextAreaField("Short statement: ", validators=[DataRequired()])
@@ -27,6 +26,12 @@ class TaskForm(FlaskForm):
 		if "tags" in d:
 			d["tags"] = [i['tag'] for i in d["tags"]]
 		add_task(d)
+
+class TagsForm(FlaskForm):
+	tags = FieldList(FormField(Tag), min_entries=1, max_entries=20) #!!!
+	submit = SubmitField("Submit")
+
+	white_list = set(["tags"])
 
 class TagForm(FlaskForm):
 	tag = StringField("Tag: ", validators=[DataRequired()])

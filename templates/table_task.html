@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Задачки</title>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+    	/**
+             * Adjust the indices of form fields when removing items.
+             */
+            function adjustIndices(removedIndex) {
+                var $forms = $('.subform');
+
+                $forms.each(function(i) {
+                    var $form = $(this);
+                    var index = parseInt($form.data('index'));
+                    var newIndex = index - 1;
+
+                    if (index < removedIndex) {
+                        // Skip
+                        return true;
+                    }
+
+                    // Change ID in form itself
+                    $form.attr('id', $form.attr('id').replace(index, newIndex));
+                	$form.attr('data-index', $form.attr('data-index').replace(index, newIndex));
+                    $form.data('index', newIndex);
+
+                    // Change IDs in form inputs
+                    $form.find('input').each(function(j) {
+                        var $item = $(this);
+                        $item.attr('id', $item.attr('id').replace(index, newIndex));
+                        $item.attr('name', $item.attr('name').replace(index, newIndex));
+                    });
+
+                    $form.find('label').each(function(idx) {
+                    	var $item = $(this);
+
+                    	$item.attr('for', $item.attr('for').replace(index, newIndex));
+                	});
+
+                	$form.find('select').each(function(j) {
+                        var $item = $(this);
+                        $item.attr('id', $item.attr('id').replace(index, newIndex));
+                        $item.attr('name', $item.attr('name').replace(index, newIndex));
+                    });
+                });
+            }
+
+            /**
+             * Remove a form.
+             */
+            function removeForm() {
+                var $removedForm = $(this).closest('.subform');
+                var removedIndex = parseInt($removedForm.data('index'));
+
+                $removedForm.remove();
+
+                // Update indices
+                adjustIndices(removedIndex);
+            }
+
+            /**
+             * Add a new form.
+             */
+            function addForm() {
+                var $templateForm = $('#tags-_-form');
+
+                if (!$templateForm) {
+                    console.log('[ERROR] Cannot find template');
+                    return;
+                }
+
+                // Get Last index
+                var $lastForm = $('.subform').last();
+
+                var newIndex = 0;
+
+                if ($lastForm.length > 0) {
+                    newIndex = parseInt($lastForm.data('index')) + 1;
+                }
+
+                // Maximum of 20 subforms
+                if (newIndex > 20) {
+                    console.log('[WARNING] Reached maximum number of elements');
+                    return;
+                }
+
+                console.log($templateForm);
+
+                // Add elements
+                var $newForm = $templateForm.clone();
+
+                $newForm.attr('id', $newForm.attr('id').replace('_', newIndex));
+                $newForm.attr('data-index', $newForm.attr('data-index').replace('_', newIndex));
+                $newForm.data('index', newIndex);
+
+                $newForm.find('input').each(function(idx) {
+                    var $item = $(this);
+
+                    $item.attr('id', $item.attr('id').replace('_', newIndex));
+                    $item.attr('name', $item.attr('name').replace('_', newIndex));
+                });
+
+                $newForm.find('label').each(function(idx) {
+                    var $item = $(this);
+
+                    $item.attr('for', $item.attr('for').replace('_', newIndex));
+                });
+
+                $newForm.find('select').each(function(idx) {
+                    var $item = $(this);
+
+                    $item.attr('id', $item.attr('id').replace('_', newIndex));
+                    $item.attr('name', $item.attr('name').replace('_', newIndex));
+                });
+
+                // Append
+                $('#tags-container').append($newForm);
+                $newForm.addClass('subform');
+                $newForm.removeClass('is-hidden');
+
+                $newForm.find('.remove').click(removeForm);
+            }
+
+
+            $(document).ready(function() {
+                $('#add').click(addForm);
+                $('.remove').click(removeForm);
+            });
+    </script>
+    <style>
+        .is-hidden {
+            display: none;
+        }
+       
+       	table, th, td {
+       		border-collapse: collapse;
+			border: 1px solid grey;
+       	}
+       	td {
+       		min-width: 100px;
+       	}
+
+    </style>
+</head>
+<body>
+	<form action="" method="post">
+
+	    {{ form.csrf_token() }}
+		
+		<a id="add" href="#">Add Tag</a>
+
+		<div id="tags-container">
+	        {% for tag in form.tags %}
+	            <div id="tags-{{ loop.index0 }}-form" class="subform" data-index="{{ loop.index0 }}">
+
+		   	 		{{ tag.csrf_token() }}
+	                {{ tag.tag.label }}
+	                {{ tag.tag }}
+
+	                <a class="remove" href="#">Remove</a>
+	            </div>
+	        {% endfor %}
+        </div>
+
+        {{form.submit}}
+
+    </form>
+	<table>
+		<tr>
+			<th>ID</th>
+			<th>Name</th>
+			<th>Short statement</th>
+			<th>Tags</th>
+			<th>Complexity</th>
+			<th>Source</th>
+			<th>Todo</th>
+			<th>Full</th>
+		</tr>
+		{% for task in tasks %}
+			<tr>
+			{% for i in task %}
+				<td> {{i}} </td>
+			{% endfor %}
+			<td><a href="task/{{task[0]}}">Link</a>
+			</td>
+			</tr>
+		{% endfor %}
+	</table>
+
+	{# Form template #}
+    <div id="tags-_-form" class="is-hidden" data-index="_">
+    	<input id="tags-_-csrf_token" name="tags-_-csrf_token" type="hidden" value="{{ form.csrf_token._value() }}">
+
+    	<label for="tags-_-tag">Tag: </label>
+        <select id="tags-_-tag" name="tags-_-tag" type="text" required>
+        	{% for (id, tag) in form.tags[0].tag.choices %}
+        		<option value="{{ id }}">{{tag}}</option>
+        	{% endfor %}
+        </select>
+        <a class="remove" href="#">Remove</a>
+    </div>
+
+</body>
+</html>

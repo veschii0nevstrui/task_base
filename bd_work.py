@@ -31,6 +31,56 @@ def tag_list():
 
 	return ans
 
+def task_list(tag_list):
+	conn = connect()
+	cursor = conn.cursor()
+
+	s = "WHERE tag_id IN (" + ", ".join(tag_list) + ")"
+
+	if tag_list == []:
+		s = ""
+
+	query = '''
+		SELECT tasks.id, name, short_statement, GROUP_CONCAT(tags.tag SEPARATOR ", "), complexity, source, todo 
+		FROM (
+			SELECT task_id FROM tags_task %s
+			GROUP BY task_id
+			HAVING COUNT(DISTINCT tag_id) >= %s
+		) s INNER JOIN tasks ON s.task_id = tasks.id
+		INNER JOIN tags_task ON s.task_id = tags_task.task_id
+		INNER JOIN tags ON tags_task.tag_id = tags.id
+		GROUP BY tasks.id 
+		''' % (s, str(len(tag_list)))
+
+	cursor.execute(query)
+	ans = cursor.fetchall()
+
+	cursor.close()
+	conn.close()
+
+	return ans
+
+def get_task(t_id):
+	conn = connect()
+	cursor = conn.cursor()
+
+	cursor.execute("SELECT id, name, statement, tutorial, complexity, source, todo FROM tasks WHERE id=%s", [t_id])
+	ans = cursor.fetchall()
+
+	cursor.execute('''
+		SELECT tag
+		FROM 
+			tasks LEFT JOIN tags_task ON tasks.id = tags_task.task_id
+			LEFT JOIN tags ON tags_task.tag_id = tags.id
+		WHERE tasks.id = %s
+		''', [t_id])
+	tags = [i[0] for i in cursor.fetchall()]
+
+	cursor.close()
+	conn.close()
+
+	return [ans[0], tags]
+
 def add_tag(tag):
 	conn = connect()
 	cursor = conn.cursor()
