@@ -143,7 +143,6 @@ def update_task(task, t_id):
 	cursor.execute("DELETE FROM tags_task WHERE task_id=%s", [str(t_id)])
 
 	if tags != None:
-		print(tags)
 		for tag in tags:
 			insert_tag = "INSERT INTO tags_task (task_id, tag_id) VALUES (%s, %s)"
 			cursor.execute(insert_tag, [t_id, tag['tag']])

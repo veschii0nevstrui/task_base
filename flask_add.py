@@ -55,7 +55,7 @@ def render_task(t_id):
 def edit_task(t_id):
 	task, tags = get_task(t_id)
 	form = TaskForm(
-		name = "Настя самая замечательная",
+		name = task['name'],
 		statement = task['statement'],
 		short_statement = task['short_statement'],
 		todo = task['todo'],
