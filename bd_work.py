@@ -133,13 +133,15 @@ def add_task(task):
 def update_task(task, t_id):
 	tags = task.pop("tags", None)
 
-	updates = ', '.join([str(key) + "='" + str(value) + "'" for key, value in task.items()])
-	query = "UPDATE tasks SET %s WHERE id=%s" % (updates, t_id)
-
+	template = ', '.join([str(k) + "=%s" for k, v in task.items()])
+	query = "UPDATE tasks SET %s WHERE id=%s" % (template, "%s")
+	
 	conn = connect()
 	cursor = conn.cursor()
 
-	cursor.execute(query)
+	print(query)
+	
+	cursor.execute(query, list(task.values()) + [t_id])
 	cursor.execute("DELETE FROM tags_task WHERE task_id=%s", [str(t_id)])
 
 	if tags != None:

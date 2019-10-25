@@ -9,6 +9,22 @@
     		font-weight: bold;
     	}
     </style>
+	
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.6/MathJax.js?config=TeX-AMS_HTML">
+        MathJax.Hub.Config({
+            tex2jax: {
+                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                displayMath: [ ['$$','$$'], ["\\[","\\]"] ],},
+            TeX: {equationNumbers: {
+                autoNumber: "AMS"
+              },Augment: {  Definitions: {
+               macros: {
+                 overbracket:  ['UnderOver','23B4',1],
+                 underbracket: ['UnderOver','23B5',1],
+               }
+             }}},
+        });
+    </script>
 </head>
 <body>
 	<p><a href="/tasks">К списку</a></p>
