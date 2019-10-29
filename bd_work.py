@@ -130,6 +130,8 @@ def add_task(task):
 	cursor.close()
 	conn.close()
 
+#SQL алхимия
+
 def update_task(task, t_id):
 	tags = task.pop("tags", None)
 
