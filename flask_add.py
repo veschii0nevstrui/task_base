@@ -69,6 +69,7 @@ def edit_task(t_id):
 
 	if form.validate_on_submit():
 		d = _to_dict(form)
+		d['tags'] = [t['tag'] for t in d['tags']]
 		update_task(d, t_id)
 		return redirect(url_for('render_task', t_id=t_id))
 
