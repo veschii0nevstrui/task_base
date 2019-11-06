@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Теги</title>
+
+    <style>
+        .is-hidden {
+            display: none;
+        }
+       
+       	table, th, td {
+       		border-collapse: collapse;
+			border: 1px solid grey;
+       	}
+       	td {
+       		min-width: 100px;
+       	}
+
+    </style>
+</head>
+<body>
+    <table>
+		<tr>
+			<th>ID</th>
+			<th>Tag</th>
+			<th>Parent</th>
+			<th>Edit</th>
+		</tr>
+		{% for tag in tags %}
+			<tr>
+				<td>{{ tag['id'] }}</td>
+				<td>{{ tag['tag'] }}</td>
+				<td>{{ tag_name[tag['parent']] }}</td>
+
+				<td><a href="edit_tag/{{tag['id']}}">Link</a>
+				</td>
+			</tr>
+		{% endfor %}
+	</table>
+
+</body>
+</html>

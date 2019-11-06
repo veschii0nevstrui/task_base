@@ -12,9 +12,14 @@ class Tag(Base):
 
     id = Column(Integer(), primary_key=True, auto_increment=True)
     tag = Column(String())
+    parent = Column(Integer(), ForeignKey('tags.id'))
 
     def __init__(self, d):
         self.tag = d.get('tag', '')
+        self.parent = d.get('parent', None)
+        if self.parent == 0:
+        	self.parent = None
+
 
     def __repr__(self):
         return "<Tag('%s', '%s')>" % (self.id, self.tag)
@@ -86,11 +91,72 @@ def session_scope():
 
 
 
-def tag_list():
+
+def tag_dict():
 	with session_scope() as session:
-		ans = [(t.id, t.tag) for t in session.query(Tag)]
+		ans = session.query(Tag)
+		return [tag.__dict__ for tag in ans.all()]
+
+def tag_list():
+	tags = tag_dict()
+	tag_name = {tag['id']: tag['tag'] for tag in tags}
+
+	graph = {}
+	for tag in tags:
+		if tag['parent'] not in graph:
+			graph[tag['parent']] = []
+
+		graph[tag['parent']].append(tag['id'])
+
+	ans = []
+
+	def dfs(t_id, depth):
+		if t_id != None:
+			ans.append((t_id, ("-- " * depth) + tag_name[t_id]))
+		if t_id not in graph:
+			return
+		for t in graph[t_id]:
+			dfs(t, depth + 1)
+
+	dfs(None, -1)
 
 	return ans
+
+
+def get_tag(t_id):
+	with session_scope() as session:
+		return session.query(Tag).filter(Tag.id == t_id).first().__dict__
+
+def parent_set(t_id):
+	if t_id == None:
+		return set()
+	
+	with session_scope() as session:
+		tag = session.query(Tag).filter(Tag.id == t_id).first().__dict__
+
+	ans = parent_set(tag['parent'])
+	ans.add(t_id)
+	return ans
+
+def add_tag(tag):
+	with session_scope() as session:
+		session.add(Tag(tag))
+
+def update_tag(tag, t_id):
+	if int(t_id) in parent_set(tag['parent']):
+		print("Here")
+		raise Exception("Tag in his parent list")
+	
+	with session_scope() as session:
+		session.query(Tag).filter(Tag.id == t_id).update(values=tag)
+
+
+
+def get_task(t_id):
+	with session_scope() as session:
+		ans = session.query(Task).filter(Task.id == t_id)
+		tags = session.query(Tag).join(Tags_task).filter(Tags_task.task_id == t_id)
+		return [ans.first().__dict__, [t.__dict__ for t in tags.all()]]
 
 def task_dict(tag_list):
 	with session_scope() as session:
@@ -115,18 +181,6 @@ def task_dict(tag_list):
 
 		return ans
 
-
-def get_task(t_id):
-	with session_scope() as session:
-		ans = session.query(Task).filter(Task.id == t_id)
-		tags = session.query(Tag).join(Tags_task).filter(Tags_task.task_id == t_id)
-		return [ans.first().__dict__, [t.__dict__ for t in tags.all()]]
-
-def add_tag(tag):
-	with session_scope() as session:
-		session.add(Tag(tag))
-
-
 def add_task(task):
 	'''
 		task must be format like:
@@ -143,23 +197,31 @@ def add_task(task):
 	'''
 	tags = task.pop("tags", None)
 
+	tag_l = set()
+	for tag in tags:
+		tag_l |= parent_set(tag)
+
 	with session_scope() as session:
 		t = Task(task)
 		session.add(t)
 		session.commit()
 
 		if tags != None:
-			for tag in tags:
+			for tag in tag_l:
 				session.add(Tags_task({'task_id': t.id, 'tag_id': tag}))
 
 
 def update_task(task, t_id):
 	tags = task.pop("tags", None)
 
+	tag_l = set()
+	for tag in tags:
+		tag_l |= parent_set(tag)
+
 	with session_scope() as session:
 		session.query(Task).filter(Task.id == t_id).update(values=task)
 		session.query(Tags_task).filter(Tags_task.task_id == t_id).delete()
 		
 		if tags != None:
-			for tag in tags:
+			for tag in tag_l:
 				session.add(Tags_task({'task_id': t_id, 'tag_id': tag}))

@@ -35,10 +35,14 @@ class TagsForm(FlaskForm):
 
 class TagForm(FlaskForm):
 	tag = StringField("Tag: ", validators=[DataRequired()])
+	parent = SelectField("Tag: ", coerce=int, choices=[(0, "")] + tag_list())
 	submit = SubmitField("Submit")
 
 	template = "add_tag.html"
-	white_list = set(["tag"])
+	white_list = set(["tag", "parent"])
+
+	def set_choices(self):
+		self.parent.choices = [(0, "")] + tag_list()
 
 	def add(self, d):
 		add_tag(d)

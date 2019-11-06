@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 from forms import TaskForm, TagForm, TagsForm, Tag
-from bd_work import task_dict, get_task, tag_list, update_task
+from bd_work import task_dict, get_task, update_task, tag_list, get_tag, update_tag, tag_dict
 import argparse
 import sys
 
@@ -18,6 +18,7 @@ def add(obj):
 			tag.set_choices()
 	elif obj == "tag":
 		form = TagForm()
+		form.set_choices()
 	else:
 		return "Sorry, this page has not been developed yet"
 
@@ -45,6 +46,12 @@ def table_tasks():
 	
 	ans = task_dict(tag_list)
 	return render_template("table_task.html", tasks=ans, form=form)
+
+@app.route('/tags')
+def table_tags():
+	tags = tag_dict()
+	tag_name = {t['id']: t['tag'] for t in tags}
+	return render_template("table_tags.html", tags=tags, tag_name=tag_name)
 
 @app.route('/task/<t_id>')
 def render_task(t_id):
@@ -82,6 +89,23 @@ def edit_task(t_id):
 		form.tags.append_entry(t)
 
 	return render_template(form.template, form=form, name="Редактировать задачу")
+
+@app.route('/edit_tag/<t_id>', methods = ['get', 'post'])
+def edit_tag(t_id):
+	tag = get_tag(t_id)
+	form = TagForm(
+		tag = tag['tag'],
+		parent = tag['parent']
+	)
+
+	form.set_choices()
+
+	if form.validate_on_submit():
+		d = _to_dict(form)
+		update_tag(d, t_id)
+		return redirect(url_for('table_tags'))
+
+	return render_template(form.template, form=form, name='Редактировать тег')
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="Just parse")
