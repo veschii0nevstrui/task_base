@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{name}}</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <title>Добавить контест</title>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script>
     	/**
              * Adjust the indices of form fields when removing items.
@@ -65,7 +65,7 @@
              * Add a new form.
              */
             function addForm() {
-                var $templateForm = $('#tags-_-form');
+                var $templateForm = $('#tasks-_-form');
 
                 if (!$templateForm) {
                     console.log('[ERROR] Cannot find template');
@@ -117,7 +117,7 @@
                 });
 
                 // Append
-                $('#tags-container').append($newForm);
+                $('#tasks-container').append($newForm);
                 $newForm.addClass('subform');
                 $newForm.removeClass('is-hidden');
 
@@ -150,14 +150,14 @@
     </style>
 </head>
 <body>
-    <p><a href="/tasks">К списку</a></p>
-    <p><a href="/add/tag">Новый тег</a></p>
+    <p><a href="/contests">К списку</a></p>
+    <p><a href="/add/task">Добавить задачу</a></p>
 
 	<form action="" method="post">
 
 	    {{ form.csrf_token() }}
 
-	    {% for field in form if field.name != "csrf_token" and field.name != "tags" %}
+	    {% for field in form if field.name != "csrf_token" and field.name != "tasks" %}
 		<p>{{ field.label() }}</p>
 		<p>{{ field }}
 		    {% for error in field.errors %}
@@ -166,15 +166,15 @@
 		</p>
 	    {% endfor %}
 
-		<a id="add" href="#add">Add Tag</a>
+		<a id="add" href="#add">Add Task</a>
 
-		<div id="tags-container">
-	        {% for tag in form.tags %}
-	            <div id="tags-{{ loop.index0 }}-form" class="subform" data-index="{{ loop.index0 }}">
+		<div id="tasks-container">
+	        {% for task in form.tasks %}
+	            <div id="tasks-{{ loop.index0 }}-form" class="subform" data-index="{{ loop.index0 }}">
 
-		   	 		{{ tag.csrf_token() }}
-	                {{ tag.tag.label }}
-	                {{ tag.tag }}
+		   	 		{{ task.csrf_token() }}
+	                {{ task.task.label }}
+	                {{ task.task }}
 
 	                <a class="remove" href="#add">Remove</a>
 	            </div>
@@ -183,13 +183,13 @@
     </form>
 
     {# Form template #}
-    <div id="tags-_-form" class="is-hidden" data-index="_">
-    	<input id="tags-_-csrf_token" name="tags-_-csrf_token" type="hidden" value="{{ form.csrf_token._value() }}">
+    <div id="tasks-_-form" class="is-hidden" data-index="_">
+    	<input id="tasks-_-csrf_token" name="tasks-_-csrf_token" type="hidden" value="{{ form.csrf_token._value() }}">
 
-    	<label for="tags-_-tag">Tag: </label>
-        <select id="tags-_-tag" name="tags-_-tag" type="text" required>
-        	{% for (id, tag) in form.tags[0].tag.choices %}
-        		<option value="{{ id }}">{{tag}}</option>
+    	<label for="tasks-_-task">Task: </label>
+        <select id="tasks-_-task" name="tasks-_-task" type="text" required>
+        	{% for (id, task) in form.tasks[0].task.choices %}
+        		<option value="{{ id }}">{{task}}</option>
         	{% endfor %}
         </select>
         <a class="remove" href="#add">Remove</a>

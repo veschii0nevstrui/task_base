@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Контесты</title>
+
+    <style>
+        .is-hidden {
+            display: none;
+        }
+       
+       	table, th, td {
+       		border-collapse: collapse;
+			border: 1px solid grey;
+       	}
+       	td {
+       		min-width: 100px;
+       	}
+
+    </style>
+</head>
+<body>
+	<p><a href="/add/contest">Добавить контест</a></p>
+
+    <table>
+		<tr>
+			<th>ID</th>
+			<th>Name</th>
+			<th>Year</th>
+			<th>Description</th>
+			<th>Link</th>
+			<th>Tutorial</th>
+			<th>Full</th>
+		</tr>
+		{% for contest in contests %}
+			<tr>
+				<td>{{ contest['id'] }}</td>
+				<td>{{ contest['name'] }}</td>
+				<td>{{ contest['year'] }}</td>
+				<td>{{ contest['description'] }}</td>
+				<td><a href="http://{{ contest['link'] }}">Ссылка</a></td>
+				<td><a href="http://{{ contest['tutorial'] }}">Ссылка</a></td>
+				<td><a href="/contest/{{contest['id']}}">Ссылка</a></td>
+			</tr>
+		{% endfor %}
+	</table>
+</body>
+</html>

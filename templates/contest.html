@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{contest['name']}}</title>
+    <style>
+    	.title {
+    		text-align: center;
+    		font-weight: bold;
+    	}
+        table, th, td {
+            border-collapse: collapse;
+            border: 1px solid grey;
+        }
+        td {
+            min-width: 100px;
+        }
+    </style>
+	
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.6/MathJax.js?config=TeX-AMS_HTML">
+        MathJax.Hub.Config({
+            tex2jax: {
+                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                displayMath: [ ['$$','$$'], ["\\[","\\]"] ],},
+            TeX: {equationNumbers: {
+                autoNumber: "AMS"
+              },Augment: {  Definitions: {
+               macros: {
+                 overbracket:  ['UnderOver','23B4',1],
+                 underbracket: ['UnderOver','23B5',1],
+               }
+             }}},
+        });
+    </script>
+</head>
+<body>
+	<p><a href="/contests">К списку</a></p>
+	<p class = "title">{{contest['id']}} {{contest['name']}} {{contest['year']}}</p>
+	<p>{{contest['description']}}</p>
+    <p><a href="{{contest['link']}}">Ссылка на контест</a></p>
+    <p><a href="{{contest['tutorial']}}">Ссылка на разбор</a></p>
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Short statement</th>
+            <th>Tags</th>
+            <th>Complexity</th>
+            <th>Source</th>
+            <th>Todo</th>
+            <th>Full</th>
+        </tr>
+        {% for task in tasks %}
+            <tr>
+                <td>{{ task['id'] }}</td>
+                <td>{{ task['name'] }}</td>
+                <td>{{ task['short_statement'] }}</td>
+                <td>{{ task['tags'] }}</td>
+                <td>{{ task['complexity'] }}</td>
+                <td>{{ task['source'] }}</td>
+                <td>{{ task['todo'] }}</td>
+
+                <td><a href="/task/{{task['id']}}">Link</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+	<p><a href="/edit_contest/{{contest['id']}}">Редактировать</a></p>
+
+</body>
+</html>

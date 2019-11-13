@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
-from forms import TaskForm, TagForm, TagsForm, Tag
-from bd_work import task_dict, get_task, update_task, tag_list, get_tag, update_tag, tag_dict
+from forms import TaskForm, TagForm, ContestForm, TagsForm, Tag, Task
+from bd_work import task_dict, get_task, update_task, tag_list, get_tag, update_tag, tag_dict, tag_list, contest_dict, get_contest
 import argparse
 import sys
 
@@ -19,6 +19,8 @@ def add(obj):
 	elif obj == "tag":
 		form = TagForm()
 		form.set_choices()
+	elif obj == 'contest':
+		form = ContestForm()
 	else:
 		return "Sorry, this page has not been developed yet"
 
@@ -26,6 +28,11 @@ def add(obj):
 		d = _to_dict(form)
 		form.add(d)
 		return redirect(url_for('add', obj=obj))
+
+	if obj == 'contest' and form.tasks.entries == []:
+		task = Task()
+		task.set_choices()
+		form.tasks.append_entry(task)
 
 	return render_template(form.template, form=form, name="Добавить задачу")
 
@@ -51,12 +58,25 @@ def table_tasks():
 def table_tags():
 	tags = tag_dict()
 	tag_name = {t['id']: t['tag'] for t in tags}
-	return render_template("table_tags.html", tags=tags, tag_name=tag_name)
+	tag_l = tag_list()
+	return render_template("table_tags.html", tags=tags, tag_name=tag_name, tag_list=tag_l)
+
+@app.route('/contests')
+def table_contest():
+	contests = contest_dict()
+	return render_template("table_contests.html", contests=contests)
+
 
 @app.route('/task/<t_id>')
 def render_task(t_id):
 	task, tags = get_task(t_id)
 	return render_template("task.html", task=task, tags=tags)
+
+@app.route('/contest/<c_id>')
+def render_contest(c_id):
+	contest, tasks = get_contest(c_id)
+	return render_template("contest.html", contest=contest, tasks=tasks)
+
 
 @app.route('/edit_task/<t_id>', methods=['get', 'post'])
 def edit_task(t_id):
@@ -80,13 +100,14 @@ def edit_task(t_id):
 		update_task(d, t_id)
 		return redirect(url_for('render_task', t_id=t_id))
 
-	form.tags.pop_entry()
+	if tags != []:
+		form.tags.pop_entry()
 
-	for tag in tags:
-		t = Tag()
-		t.tag = tag['id']
-		t.csrf_token = form.csrf_token
-		form.tags.append_entry(t)
+		for tag in tags:
+			t = Tag()
+			t.tag = tag['id']
+			t.csrf_token = form.csrf_token
+			form.tags.append_entry(t)
 
 	return render_template(form.template, form=form, name="Редактировать задачу")
 

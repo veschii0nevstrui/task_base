@@ -10,7 +10,7 @@ Base = declarative_base()
 class Tag(Base):
     __tablename__ = 'tags'
 
-    id = Column(Integer(), primary_key=True, auto_increment=True)
+    id = Column(Integer(), primary_key=True)
     tag = Column(String())
     parent = Column(Integer(), ForeignKey('tags.id'))
 
@@ -28,7 +28,7 @@ class Tag(Base):
 class Task(Base):
 	__tablename__ = 'tasks'
 
-	id = Column(Integer(), primary_key=True, auto_increment=True)
+	id = Column(Integer(), primary_key=True)
 	name = Column(String(), nullable=False)
 	complexity = Column(Integer())
 	statement = Column(String())
@@ -62,6 +62,40 @@ class Tags_task(Base):
 
 	def __repr__(self):
 		return "<Tags_task('%s', '%s')>" % (self.task_id, self.tag_id)
+
+
+class Contest(Base):
+	__tablename__ = 'contests'
+
+	id = Column(Integer(), primary_key=True)
+	name = Column(String(), nullable=False)
+	year = Column(Integer(), nullable=False)
+	description = Column(String())
+	link = Column(String(), nullable=False)
+	tutorial = Column(String())
+
+	def __init__(self, d):
+		self.name = d.get('name', '')
+		self.year = d.get('year', 1970)
+		self.description = d.get('description', '')
+		self.link = d.get('link', '')
+
+	def __repr__(self):
+		return "<Contest('%s', '%s', '%s', '%s')>" % (self.id, self.name, self.year, self.link)
+
+class Tasks_contest(Base):
+	__tablename__ = 'tasks_contest'
+
+	task_id = Column(Integer(), ForeignKey('tasks.id'), primary_key=True)
+	contest_id = Column(Integer(), ForeignKey('contests.id'), primary_key=True)
+
+	def __init__(self, d):
+		self.task_id = d.get('task_id', 0)
+		self.contest_id = d.get('contest_id', 0)
+
+	def __repr__(self):
+		return "<Tasks_contest('%s', '%s')>" % (self.task_id, self.contest_id)
+
 
 
 
@@ -158,6 +192,11 @@ def get_task(t_id):
 		tags = session.query(Tag).join(Tags_task).filter(Tags_task.task_id == t_id)
 		return [ans.first().__dict__, [t.__dict__ for t in tags.all()]]
 
+def task_list():
+	with session_scope() as session:
+		ans = session.query(Task.id, Task.name)
+		return [(id, str(id) + " " + name) for (id, name) in ans.all()]
+
 def task_dict(tag_list):
 	with session_scope() as session:
 		if tag_list != []:
@@ -166,13 +205,15 @@ def task_dict(tag_list):
 						group_by(Tags_task.task_id). \
 						having(func.count(distinct(Tags_task.tag_id)) >= len(tag_list)). \
 						subquery()
-		else:
-			good_tasks = session.query(Tags_task.task_id).group_by(Tags_task.task_id).subquery()
 
-		query = session.query(Task, func.group_concat(Tag.tag.op('separator')(text('"; "')))). \
-					join(good_tasks).join(Tags_task).join(Tag). \
+			query = session.query(Task, func.group_concat(Tag.tag.op('separator')(text('"; "')))). \
+					join(good_tasks).outerjoin(Tags_task).outerjoin(Tag). \
 					group_by(Task.id)
-	
+		else:
+			query = session.query(Task, func.group_concat(Tag.tag.op('separator')(text('"; "')))). \
+						outerjoin(Tags_task, Task.id == Tags_task.task_id). \
+						outerjoin(Tag).group_by(Task.id)
+
 		ans = []
 		for i in query.all():
 			d = i[0].__dict__.copy()
@@ -210,7 +251,6 @@ def add_task(task):
 			for tag in tag_l:
 				session.add(Tags_task({'task_id': t.id, 'tag_id': tag}))
 
-
 def update_task(task, t_id):
 	tags = task.pop("tags", None)
 
@@ -225,3 +265,43 @@ def update_task(task, t_id):
 		if tags != None:
 			for tag in tag_l:
 				session.add(Tags_task({'task_id': t_id, 'tag_id': tag}))
+
+
+def get_contest(c_id):
+	with session_scope() as session:
+		contest = session.query(Contest).filter(Contest.id == c_id)
+		good_tasks = session.query(Tasks_contest.task_id). \
+						filter(Tasks_contest.contest_id == c_id). \
+						subquery()
+
+		query = session.query(Task, func.group_concat(Tag.tag.op('separator')(text('"; "')))). \
+					join(good_tasks).outerjoin(Tags_task).outerjoin(Tag). \
+					group_by(Task.id)
+
+		tasks = []
+		for i in query.all():
+			d = i[0].__dict__.copy()
+			d['tags'] = i[1]
+			tasks.append(d)
+
+		return (contest.first().__dict__, tasks)
+
+def contest_dict():
+	with session_scope() as session:
+		query = session.query(Contest).all()
+		return [i.__dict__.copy() for i in query]
+
+def add_contest(contest):
+	tasks = contest.pop('tasks', None)
+
+	with session_scope() as session:
+		c = Contest(contest)
+		session.add(c)
+		session.commit()
+
+		if tasks != None:
+			for task in tasks:
+				session.add(Tasks_contest({'contest_id': c.id, 'task_id': task}))
+
+def update_contest():
+	pass

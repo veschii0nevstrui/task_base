@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField, FormField, FieldList, SelectField
 from wtforms.validators import DataRequired
-from bd_work import add_task, add_tag, tag_list
+from bd_work import add_task, add_tag, add_contest, tag_list, task_list
 
 class Tag(FlaskForm):
 	tag = SelectField("Tag: ", validators=[DataRequired()], coerce=int, choices=[(0, "")] + tag_list())
@@ -27,15 +27,9 @@ class TaskForm(FlaskForm):
 			d["tags"] = [i['tag'] for i in d["tags"]]
 		add_task(d)
 
-class TagsForm(FlaskForm):
-	tags = FieldList(FormField(Tag), min_entries=1, max_entries=20) #!!!
-	submit = SubmitField("Submit")
-
-	white_list = set(["tags"])
-
 class TagForm(FlaskForm):
 	tag = StringField("Tag: ", validators=[DataRequired()])
-	parent = SelectField("Tag: ", coerce=int, choices=[(0, "")] + tag_list())
+	parent = SelectField("Parent: ", coerce=int, choices=[(0, "")] + tag_list())
 	submit = SubmitField("Submit")
 
 	template = "add_tag.html"
@@ -46,3 +40,30 @@ class TagForm(FlaskForm):
 
 	def add(self, d):
 		add_tag(d)
+
+class Task(FlaskForm):
+	task = SelectField("Task: ", validators=[DataRequired()], coerce=int, choices=[(0, "")] + task_list())
+	def set_choices(self):
+		self.task.choices = [(0, "")] + task_list()
+
+class ContestForm(FlaskForm):
+	name = StringField("Name: ", validators=[DataRequired()])
+	year = StringField("Year: ", validators=[DataRequired()])
+	description = TextAreaField("Description: ")
+	link = StringField("Link: ", validators=[DataRequired()])
+	tutorial = StringField("Tutorial link: ")
+	tasks = FieldList(FormField(Task), min_entries=0, max_entries=20) #!!!
+	submit = SubmitField()
+
+	white_list = set(["name", "year", "description", "link", "tutorial", "tasks"])
+	template = "add_contest.html"
+
+	def add(self, d):
+		d['tasks'] = [i['task'] for i in d['tasks']]
+		add_contest(d)
+
+class TagsForm(FlaskForm):
+	tags = FieldList(FormField(Tag), min_entries=1, max_entries=20) #!!!
+	submit = SubmitField("Submit")
+
+	white_list = set(["tags"])
