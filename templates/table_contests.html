@@ -38,8 +38,8 @@
 				<td>{{ contest['name'] }}</td>
 				<td>{{ contest['year'] }}</td>
 				<td>{{ contest['description'] }}</td>
-				<td><a href="http://{{ contest['link'] }}">Ссылка</a></td>
-				<td><a href="http://{{ contest['tutorial'] }}">Ссылка</a></td>
+				<td><a href="{{ contest['link'] }}">Ссылка</a></td>
+				<td><a href="{{ contest['tutorial'] }}">Ссылка</a></td>
 				<td><a href="/contest/{{contest['id']}}">Ссылка</a></td>
 			</tr>
 		{% endfor %}

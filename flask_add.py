@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 from forms import TaskForm, TagForm, ContestForm, TagsForm, Tag, Task
-from bd_work import task_dict, get_task, update_task, tag_list, get_tag, update_tag, tag_dict, tag_list, contest_dict, get_contest
+from bd_work import task_dict, get_task, update_task, tag_list, get_tag, update_tag, tag_dict, tag_list, contest_dict, get_contest, update_contest
 import argparse
 import sys
 
@@ -14,15 +14,14 @@ app.config['SECRET_KEY'] = 'just for exists'
 def add(obj):
 	if obj == "task":
 		form = TaskForm()
-		for tag in form.tags:
-			tag.set_choices()
 	elif obj == "tag":
 		form = TagForm()
-		form.set_choices()
 	elif obj == 'contest':
 		form = ContestForm()
 	else:
 		return "Sorry, this page has not been developed yet"
+
+	form.set_choices()
 
 	if form.validate_on_submit():
 		d = _to_dict(form)
@@ -91,8 +90,7 @@ def edit_task(t_id):
 		source = task['source']
 	)
 
-	for tag in form.tags:
-		tag.set_choices()
+	form.set_choices()
 
 	if form.validate_on_submit():
 		d = _to_dict(form)
@@ -105,6 +103,7 @@ def edit_task(t_id):
 
 		for tag in tags:
 			t = Tag()
+			t.set_choices()
 			t.tag = tag['id']
 			t.csrf_token = form.csrf_token
 			form.tags.append_entry(t)
@@ -127,6 +126,35 @@ def edit_tag(t_id):
 		return redirect(url_for('table_tags'))
 
 	return render_template(form.template, form=form, name='Редактировать тег')
+
+@app.route('/edit_contest/<c_id>', methods=['get', 'post'])
+def edit_contest(c_id):
+	contest, tasks = get_contest(c_id)
+	form = ContestForm(
+		name = contest['name'],
+		year = contest['year'],
+		description = contest['description'],
+		link = contest['link'],
+		tutorial = contest['tutorial']
+		)
+
+	for task in form.tasks:
+		task.set_choices()
+
+	if form.validate_on_submit():
+		d = _to_dict(form)
+		d['tasks'] = [t['task'] for t in d['tasks']]
+		update_contest(d, c_id)
+		return redirect(url_for('render_contest', c_id=c_id))
+
+	if tasks != []:
+		for task in tasks:
+			t = Task()
+			t.task = task['id']
+			t.csrf_token = form.csrf_token
+			form.tasks.append_entry(t)
+
+	return render_template(form.template, form=form)
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="Just parse")

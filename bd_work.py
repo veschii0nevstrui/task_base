@@ -79,6 +79,7 @@ class Contest(Base):
 		self.year = d.get('year', 1970)
 		self.description = d.get('description', '')
 		self.link = d.get('link', '')
+		self.tutorial = d.get('tutorial', '')
 
 	def __repr__(self):
 		return "<Contest('%s', '%s', '%s', '%s')>" % (self.id, self.name, self.year, self.link)
@@ -267,6 +268,11 @@ def update_task(task, t_id):
 				session.add(Tags_task({'task_id': t_id, 'tag_id': tag}))
 
 
+def contest_list():
+	with session_scope() as session:
+		ans = session.query(Contest.id, Contest.name)
+		return ans.all()
+
 def get_contest(c_id):
 	with session_scope() as session:
 		contest = session.query(Contest).filter(Contest.id == c_id)
@@ -303,5 +309,13 @@ def add_contest(contest):
 			for task in tasks:
 				session.add(Tasks_contest({'contest_id': c.id, 'task_id': task}))
 
-def update_contest():
-	pass
+def update_contest(contest, c_id):
+	tasks = contest.pop('tasks', None)
+
+	with session_scope() as session:
+		session.query(Contest).filter(Contest.id == c_id).update(values=contest)
+		session.query(Tasks_contest).filter(Tasks_contest.contest_id == c_id).delete()
+
+		if tasks != None:
+			for task in tasks:
+				session.add(Tasks_contest({'task_id': task, 'contest_id': c_id}))
