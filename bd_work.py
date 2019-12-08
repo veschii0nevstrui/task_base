@@ -2,10 +2,39 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.schema import ForeignKey
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy import Column, Integer, String, create_engine, update, func, distinct, text
+from sqlalchemy.exc import OperationalError
 
 from contextlib import contextmanager
 
+from flask_login import UserMixin, login_user, current_user
+
+from werkzeug.security import generate_password_hash, check_password_hash
+
 Base = declarative_base()
+
+class User(Base, UserMixin):
+	__tablename__ = 'users'
+
+	id = Column(Integer(), primary_key=True)
+	username = Column(String(100))
+	login = Column(String(50), nullable=False, unique=True)
+	password_hash = Column(String(200), nullable=False)
+	level = Column(Integer(), nullable=False)
+	approved = Column(Integer(), nullable=False)
+
+	def check_password(self, password):
+		return check_password_hash(self.password_hash, password)
+
+	def __init__(self, d):
+		self.username = d.get('username', '')
+		self.login = d.get('login', '')
+		self.password_hash = generate_password_hash(d.get('password'))
+		self.level = 0
+		self.approved = 0
+
+	def __repr__(self):
+		return "<User('%s', '%s', '%s')>" % (self.id, self.name, self.level)
+
 
 class Tag(Base):
     __tablename__ = 'tags'
@@ -108,24 +137,46 @@ with open("param") as f:
 	else:
 		db = 'task_base'
 
-engine = create_engine('mysql+pymysql://nevstrui:12345@localhost/%s' % db)
+
+engine = create_engine('mysql+pymysql://nevstrui:12345@localhost/%s' % db, pool_pre_ping=True)
 Base.metadata.create_all(engine) #Я не понимаю, зачем эта строчка нужна, но в примерах она есть везде
 Session = sessionmaker(bind=engine)
 
 @contextmanager
 def session_scope():
-    session = Session()
-    try:
-        yield session
-        session.commit()
-    except:
-        session.rollback()
-        raise
-    finally:
-        session.close()
+	session = Session()
+	try:
+		yield session
+		session.commit()
+	except:
+		session.rollback()
+		raise
+	finally:
+		session.close()
 
 
+def get_user(user_id):
+	with session_scope() as session:
+		return session.query(User).get(user_id)
 
+def add_user(user):
+	with session_scope() as session:
+		session.add(User(user))
+
+def check_user(user):
+	with session_scope() as session:
+		u = session.query(User).filter(User.login == user['login']).first()
+		if u:
+			if u.check_password(user['password']):
+				if u.approved:
+					login_user(u)
+					return "Ok"
+				else:
+					return "Подождите подтверждения, пожалуйста"
+			else:
+				return "Неправильный пароль"
+		else:
+			return "Нет такого логина"
 
 def tag_dict():
 	with session_scope() as session:
@@ -178,6 +229,8 @@ def add_tag(tag):
 		session.add(Tag(tag))
 
 def update_tag(tag, t_id):
+	if tag['parent'] == 0:
+		tag['parent'] = None
 	if int(t_id) in parent_set(tag['parent']):
 		print("Here")
 		raise Exception("Tag in his parent list")
@@ -251,6 +304,9 @@ def add_task(task):
 		if tags != None:
 			for tag in tag_l:
 				session.add(Tags_task({'task_id': t.id, 'tag_id': tag}))
+
+		if task['c_id'] != None:
+			session.add(Tasks_contest({'contest_id': task['c_id'], 'task_id': t.id}))
 
 def update_task(task, t_id):
 	tags = task.pop("tags", None)

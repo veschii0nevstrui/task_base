@@ -1,7 +1,25 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField, FormField, FieldList, SelectField
+from wtforms import StringField, SubmitField, TextAreaField, FormField, FieldList, SelectField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, URL, Optional
 from bd_work import add_task, add_tag, add_contest, tag_list, task_list, contest_list
+
+class LoginForm(FlaskForm):
+	login = StringField("Login: ", validators=[DataRequired()])
+	password = PasswordField("Password: ", validators=[DataRequired()])
+	remember = BooleanField("Remember Me: ")
+	submit = SubmitField()
+
+	white_list = set(['login', 'password', 'remember'])
+	template = "login.html"
+
+class RegisterForm(FlaskForm):
+	login = StringField("Login: ", validators=[DataRequired()])
+	password = PasswordField("Password: ", validators=[DataRequired()])
+	username = StringField("Name: ", validators=[DataRequired()])
+	submit = SubmitField()
+
+	white_list = set(['login', 'password', 'username'])
+	template = "register.html"
 
 class Tag(FlaskForm):
 	tag = SelectField("Tag: ", validators=[DataRequired()], coerce=int, choices=[(0, "")] + tag_list())
@@ -23,6 +41,7 @@ class TaskForm(FlaskForm):
 	todo = StringField("Todo: ")
 	tags = FieldList(FormField(Tag), min_entries=1, max_entries=20) #!!!
 	submit = SubmitField("Submit")
+	contest_id = None
 
 	white_list = set(["name", "complexity", "short_statement", "statement", "tutorial", "source", "tags", "todo"])
 	template = "add_task.html"

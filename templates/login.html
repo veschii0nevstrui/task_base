@@ -2,10 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{name}}</title>
+    <title>{{Войти}}</title>
 </head>
 <body>
-
 
 {% with messages = get_flashed_messages() %}
 	{% if messages %}
@@ -16,9 +15,6 @@
 		</ul>
 	{% endif %}
 {% endwith %}
-
-
-<p><a href="/tags">Список тегов</a></p>
 
 <form action="" method="post">
 

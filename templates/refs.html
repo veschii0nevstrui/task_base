@@ -1,6 +1,29 @@
-<p><a href="add/task">Добавить задачу</a></p>
-<p><a href="add/tag">Добавить тег</a></p>
-<p><a href="add/contest">Добавить контест</a></p>
-<p><a href="tasks">Список задач</a></p>
-<p><a href="tags">Список тегов</a></p>
-<p><a href="contests">Список контестов</a></p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{Ссылки}}</title>
+</head>
+<body>
+
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			<ul class=flashes>
+				{% for message in messages %}
+					<li>{{ message }}</li>
+				{% endfor %}
+			</ul>
+		{% endif %}
+	{% endwith %}
+
+	<p><a href="register">Зарегистрироваться</a></p>
+	<p><a href="login">Войти</a></p>
+	<p><a href="add/task">Добавить задачу</a></p>
+	<p><a href="add/tag">Добавить тег</a></p>
+	<p><a href="add/contest">Добавить контест</a></p>
+	<p><a href="tasks">Список задач</a></p>
+	<p><a href="tags">Список тегов</a></p>
+	<p><a href="contests">Список контестов</a></p>
+	<p><a href="logout">Выйти</a></p>
+</body>
+</html>
