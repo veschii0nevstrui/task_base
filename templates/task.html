@@ -27,24 +27,26 @@
     </script>
 </head>
 <body>
-	<p><a href="/tasks">К списку</a></p>
-	<p class = "title">{{task['id']}} {{task['name']}}</p>
-	<p>{{task['statement']}}</p>
-	<p class = "title">Разбор</p>
-	<p>{{task['tutorial']}}</p>
-	<p class = "title">Сложность</p>
-	<p>{{task['complexity']}}</p>
-	<p class = "title">Source</p>
-	<p>{{task['source']}}</p>
-	<p class = "title">TODO</p>
-	<p>{{task['todo']}}</p>
-	<p class = "title">Tags</p>
-	<p>
-		{% for tag in tags %}
-			{{tag['tag']}}
-		{% endfor %}
-	</p>
-	<p><a href="/edit_task/{{task['id']}}">Редактировать задачу</a></p>
+    <div style="width: 30%; margin: 0 auto">
+    	<p><a href="/tasks">К списку</a></p>
+    	<p class = "title">{{task['id']}} {{task['name']}}</p>
+    	<p>{{task['statement']}}</p>
+    	<p class = "title">Разбор</p>
+    	<p>{{task['tutorial']}}</p>
+    	<p class = "title">Сложность</p>
+    	<p>{{task['complexity']}}</p>
+    	<p class = "title">Source</p>
+    	<p>{{task['source']}}</p>
+    	<p class = "title">TODO</p>
+    	<p>{{task['todo']}}</p>
+    	<p class = "title">Tags</p>
+    	<p>
+    		{% for tag in tags %}
+    			{{tag['tag']}}
+    		{% endfor %}
+    	</p>
+    	<p><a href="/edit_task/{{task['id']}}">Редактировать задачу</a></p>
+    </div>
 
 </body>
 </html>

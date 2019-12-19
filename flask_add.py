@@ -79,6 +79,7 @@ def add_task():
 def add_tag():
 	form = TagForm()
 
+	form.set_choices()
 	if form.validate_on_submit():
 		d = _to_dict(form)
 		try:
@@ -88,7 +89,6 @@ def add_tag():
 			return redirect(url_for('add_tag'))
 		return redirect(url_for('table_tags'))
 
-	form.set_choices()
 
 	return render_template(form.template, form=form, name="Add tag")
 
@@ -96,6 +96,8 @@ def add_tag():
 @login_required
 def add_contest():
 	form = ContestForm()
+
+	form.set_choices()
 
 	if form.validate_on_submit():
 		d = _to_dict(form)
@@ -107,6 +109,7 @@ def add_contest():
 		form.tasks.append_entry(task)
 
 	form.set_choices()
+
 	return render_template(form.template, form=form, name = "Add contest")
 
 
@@ -118,8 +121,7 @@ def main():
 @login_required
 def table_tasks():
 	form = TagsForm()
-	for tag in form.tags:
-		tag.set_choices()
+	form.set_choices()
 
 	tag_list = []
 
@@ -222,8 +224,7 @@ def edit_contest(c_id):
 		tutorial = contest['tutorial']
 		)
 
-	for task in form.tasks:
-		task.set_choices()
+	form.set_choices()
 
 	if form.validate_on_submit():
 		d = _to_dict(form)
@@ -234,10 +235,14 @@ def edit_contest(c_id):
 	if tasks != []:
 		for task in tasks:
 			t = Task()
-			t.set_choices()
 			t.task = task['id']
 			t.csrf_token = form.csrf_token
 			form.tasks.append_entry(t)
+	else:
+		t = Task()
+		form.tasks.append_entry(t)
+
+	form.set_choices()
 
 	return render_template(form.template, form=form)
 
