@@ -32,6 +32,7 @@
 			<th>Link</th>
 			<th>Tutorial</th>
 			<th>Full</th>
+			<th>Copy</th>
 		</tr>
 		{% for contest in contests %}
 			<tr>
@@ -42,6 +43,7 @@
 				<td><a href="{{ contest['link'] }}">Ссылка</a></td>
 				<td><a href="{{ contest['tutorial'] }}">Ссылка</a></td>
 				<td><a href="/contest/{{contest['id']}}">Ссылка</a></td>
+				<td><a href="/add/contest/?c_id={{contest['id']}}">Копировать</a></td>
 			</tr>
 		{% endfor %}
 	</table>

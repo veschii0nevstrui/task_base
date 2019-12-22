@@ -95,7 +95,18 @@ def add_tag():
 @app.route('/add/contest/', methods=['get', 'post'])
 @login_required
 def add_contest():
-	form = ContestForm()
+	c_id = request.args.get("c_id", None)
+	if c_id == None:
+		form = ContestForm()
+	else:
+		contest, tasks = get_contest(c_id)
+		form = ContestForm(
+			name = contest['name'],
+			year = contest['year'],
+			description = contest['description'],
+			link = contest['link'],
+			tutorial = contest['tutorial']
+		)
 
 	form.set_choices()
 
@@ -104,9 +115,15 @@ def add_contest():
 		form.add(d)
 		return redirect(url_for('table_contests'))
 
-	if form.tasks.entries == []:
-		task = Task()
-		form.tasks.append_entry(task)
+	if c_id != None and tasks != []:
+		for task in tasks:
+			t = Task()
+			t.task = task['id']
+			t.csrf_token = form.csrf_token
+			form.tasks.append_entry(t)
+	else:
+		t = Task()
+		form.tasks.append_entry(t)
 
 	form.set_choices()
 
