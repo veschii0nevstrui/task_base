@@ -94,4 +94,8 @@ class TagsForm(FlaskForm):
 	tags = FieldList(FormField(Tag), min_entries=1, max_entries=20) #!!!
 	submit = SubmitField("Submit")
 
+	def set_choices(self):
+		for tag in self.tags:
+			tag.set_choices()
+
 	white_list = set(["tags"])

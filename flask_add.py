@@ -117,6 +117,10 @@ def add_contest():
 def main():
 	return render_template("refs.html")
 
+@app.route('/how_to')
+def how_to():
+	return render_template("how_to.html")
+
 @app.route('/tasks', methods=['get', 'post'])
 @login_required
 def table_tasks():
