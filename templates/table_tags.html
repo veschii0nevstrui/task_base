@@ -29,28 +29,16 @@
 					<tr>
 						<th>ID</th>
 						<th>Tag</th>
-						<th>Parent</th>
 						<th>Edit</th>
 					</tr>
-					{% for tag in tags %}
+					{% for tag in tag_list %}
 						<tr>
-							<td>{{ tag['id'] }}</td>
-							<td>{{ tag['tag'] }}</td>
-							<td>{{ tag_name[tag['parent']] }}</td>
+							<td>{{ tag[0] }}</td>
+							<td>{{ tag[1] }}</td>
 
-							<td><a href="edit_tag/{{tag['id']}}">Link</a>
+							<td><a href="edit_tag/{{tag[0]}}">Link</a>
 							</td>
 						</tr>
-					{% endfor %}
-				</table>
-			</td>
-			<td>
-				<table>
-					<tr>
-						<th>Tag</th>
-					</tr>
-					{% for tag in tag_list %}
-						<tr><td>{{ tag[1] }}</td></tr>
 					{% endfor %}
 				</table>
 			</td>

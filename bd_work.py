@@ -198,7 +198,7 @@ def tag_list():
 
 	def dfs(t_id, depth):
 		if t_id != None:
-			ans.append((t_id, ("-- " * depth) + tag_name[t_id]))
+			ans.append((t_id, ("--- " * depth) + tag_name[t_id]))
 		if t_id not in graph:
 			return
 		for t in graph[t_id]:
