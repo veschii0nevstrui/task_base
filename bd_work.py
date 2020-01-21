@@ -138,7 +138,7 @@ with open("param") as f:
 		db = 'task_base'
 
 
-engine = create_engine('mysql+pymysql://nevstrui:12345@localhost/%s' % db, pool_pre_ping=True)
+engine = create_engine('mysql+pymysql://nevstrui:12345@localhost/%s' % db)
 Base.metadata.create_all(engine) #Я не понимаю, зачем эта строчка нужна, но в примерах она есть везде
 Session = sessionmaker(bind=engine)
 
