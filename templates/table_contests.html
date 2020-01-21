@@ -26,13 +26,13 @@
     <table>
 		<tr>
 			<th>ID</th>
-			<th>Name</th>
-			<th>Year</th>
-			<th>Description</th>
-			<th>Link</th>
-			<th>Tutorial</th>
-			<th>Full</th>
-			<th>Copy</th>
+			<th>Название</th>
+			<th>Год</th>
+			<th>Описание</th>
+			<th>Источник</th>
+			<th>Разбор</th>
+			<th>Контест</th>
+			<th>Копировать</th>
 		</tr>
 		{% for contest in contests %}
 			<tr>
@@ -40,9 +40,9 @@
 				<td>{{ contest['name'] }}</td>
 				<td>{{ contest['year'] }}</td>
 				<td>{{ contest['description'] }}</td>
-				<td><a href="{{ contest['link'] }}">Ссылка</a></td>
-				<td><a href="{{ contest['tutorial'] }}">Ссылка</a></td>
-				<td><a href="/contest/{{contest['id']}}">Ссылка</a></td>
+				<td><a href="{{ contest['link'] }}">Источник</a></td>
+				<td><a href="{{ contest['tutorial'] }}">Разбор</a></td>
+				<td><a href="/contest/{{contest['id']}}">Контест</a></td>
 				<td><a href="/add/contest/?c_id={{contest['id']}}">Копировать</a></td>
 			</tr>
 		{% endfor %}

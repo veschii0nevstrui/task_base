@@ -138,6 +138,10 @@ def main():
 def how_to():
 	return render_template("how_to.html")
 
+@app.route('/todo')
+def todo():
+	return render_template("todo.html")
+
 @app.route('/tasks', methods=['get', 'post'])
 @login_required
 def table_tasks():

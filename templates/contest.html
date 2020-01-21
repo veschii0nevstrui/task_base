@@ -43,13 +43,13 @@
     <table>
         <tr>
             <th>ID</th>
-            <th>Name</th>
-            <th>Short statement</th>
-            <th>Tags</th>
-            <th>Complexity</th>
-            <th>Source</th>
+            <th>Название</th>
+            <th>Короткое условие</th>
+            <th>Теги</th>
+            <th>Сложность</th>
+            <th>Источник</th>
             <th>Todo</th>
-            <th>Full</th>
+            <th>Задача</th>
         </tr>
         {% for task in tasks %}
             <tr>
@@ -61,13 +61,13 @@
                 <td>{{ task['source'] }}</td>
                 <td>{{ task['todo'] }}</td>
 
-                <td><a href="/task/{{task['id']}}">Link</a>
+                <td><a href="/task/{{task['id']}}">Задача</a>
                 </td>
             </tr>
         {% endfor %}
     </table>
 
-    <p><a href="/add/task/?c_id={{contest['id']}}">Добавить задачу</a></p>
+    <p><a href="/add/task/?c_id={{contest['id']}}">Добавить новую задачу</a></p>
 	<p><a href="/edit_contest/{{contest['id']}}">Редактировать</a></p>
     <p><a href="/add/contest/?c_id={{contest['id']}}">Копировать</a></p>
 

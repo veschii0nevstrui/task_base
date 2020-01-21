@@ -28,15 +28,15 @@
 			    <table>
 					<tr>
 						<th>ID</th>
-						<th>Tag</th>
-						<th>Edit</th>
+						<th>Тег</th>
+						<th>Редактировать</th>
 					</tr>
 					{% for tag in tag_list %}
 						<tr>
 							<td>{{ tag[0] }}</td>
 							<td>{{ tag[1] }}</td>
 
-							<td><a href="edit_tag/{{tag[0]}}">Link</a>
+							<td><a href="edit_tag/{{tag[0]}}">Редактировать</a>
 							</td>
 						</tr>
 					{% endfor %}

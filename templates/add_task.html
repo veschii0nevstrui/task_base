@@ -140,7 +140,7 @@
         }
 
         #submit {
-            width: 5em;
+            width: 7em;
         }
 
         input {
@@ -166,7 +166,7 @@
 		</p>
 	    {% endfor %}
 
-		<a id="add" href="#add">Add Tag</a>
+		<a id="add" href="#add">Добавить тег</a>
 
 		<div id="tags-container">
 	        {% for tag in form.tags %}
@@ -176,7 +176,7 @@
 	                {{ tag.tag.label }}
 	                {{ tag.tag }}
 
-	                <a class="remove" href="#add">Remove</a>
+	                <a class="remove" href="#add">Удалить</a>
 	            </div>
 	        {% endfor %}
         </div>
@@ -186,13 +186,13 @@
     <div id="tags-_-form" class="is-hidden" data-index="_">
     	<input id="tags-_-csrf_token" name="tags-_-csrf_token" type="hidden" value="{{ form.csrf_token._value() }}">
 
-    	<label for="tags-_-tag">Tag: </label>
+    	<label for="tags-_-tag">Тег: </label>
         <select id="tags-_-tag" name="tags-_-tag" type="text" required>
         	{% for (id, tag) in form.tags[0].tag.choices %}
         		<option value="{{ id }}">{{tag}}</option>
         	{% endfor %}
         </select>
-        <a class="remove" href="#add">Remove</a>
+        <a class="remove" href="#add">Удалить</a>
     </div>
 
     {% if form.errors %}

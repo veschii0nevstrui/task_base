@@ -148,8 +148,8 @@
 	<form action="" method="post">
 
 	    {{ form.csrf_token() }}
-		
-		<a id="add" href="#">Add Tag</a>
+		<p>Фильтр:</p>
+		<a id="add" href="#">Добавить тег</a>
 
 		<div id="tags-container">
 	        {% for tag in form.tags %}
@@ -159,7 +159,7 @@
 	                {{ tag.tag.label }}
 	                {{ tag.tag }}
 
-	                <a class="remove" href="#">Remove</a>
+	                <a class="remove" href="#">Удалить</a>
 	            </div>
 	        {% endfor %}
         </div>
@@ -172,13 +172,13 @@
 	<table>
 		<tr>
 			<th>ID</th>
-			<th>Name</th>
-			<th>Short statement</th>
-			<th>Tags</th>
-			<th>Complexity</th>
-			<th>Source</th>
+			<th>Название</th>
+			<th>Короткое условие</th>
+			<th>Теги</th>
+			<th>Сложность</th>
+			<th>Источник</th>
 			<th>Todo</th>
-			<th>Full</th>
+			<th>Задача</th>
 		</tr>
 		{% for task in tasks %}
 			<tr>
@@ -190,7 +190,7 @@
 				<td>{{ task['source'] }}</td>
 				<td>{{ task['todo'] }}</td>
 
-				<td><a href="task/{{task['id']}}">Link</a>
+				<td><a href="task/{{task['id']}}">Задача</a>
 				</td>
 			</tr>
 		{% endfor %}
@@ -200,13 +200,13 @@
     <div id="tags-_-form" class="is-hidden" data-index="_">
     	<input id="tags-_-csrf_token" name="tags-_-csrf_token" type="hidden" value="{{ form.csrf_token._value() }}">
 
-    	<label for="tags-_-tag">Tag: </label>
+    	<label for="tags-_-tag">Тег: </label>
         <select id="tags-_-tag" name="tags-_-tag" type="text" required>
         	{% for (id, tag) in form.tags[0].tag.choices %}
         		<option value="{{ id }}">{{tag}}</option>
         	{% endfor %}
         </select>
-        <a class="remove" href="#">Remove</a>
+        <a class="remove" href="#">Удалить</a>
     </div>
 
 </body>

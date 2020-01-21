@@ -140,7 +140,7 @@
         }
 
         #submit {
-            width: 5em;
+            width: 7em;
         }
 
         input {
@@ -151,7 +151,6 @@
 </head>
 <body>
     <p><a href="/contests">К списку</a></p>
-    <p><a href="/add/task">Добавить задачу</a></p>
 
 	<form action="" method="post">
 
@@ -166,7 +165,7 @@
 		</p>
 	    {% endfor %}
 
-		<a id="add" href="#add">Add Task</a>
+		<a id="add" href="#add">Добавить задачу</a>
 
 		<div id="tasks-container">
 	        {% for task in form.tasks %}
@@ -176,7 +175,7 @@
 	                {{ task.task.label }}
 	                {{ task.task }}
 
-	                <a class="remove" href="#add">Remove</a>
+	                <a class="remove" href="#add">Удалить</a>
 	            </div>
 	        {% endfor %}
         </div>
@@ -186,13 +185,13 @@
     <div id="tasks-_-form" class="is-hidden" data-index="_">
     	<input id="tasks-_-csrf_token" name="tasks-_-csrf_token" type="hidden" value="{{ form.csrf_token._value() }}">
 
-    	<label for="tasks-_-task">Task: </label>
+    	<label for="tasks-_-task">Задача: </label>
         <select id="tasks-_-task" name="tasks-_-task" type="text" required>
         	{% for (id, task) in form.tasks[0].task.choices %}
         		<option value="{{ id }}">{{task}}</option>
         	{% endfor %}
         </select>
-        <a class="remove" href="#add">Remove</a>
+        <a class="remove" href="#add">Удалить</a>
     </div>
 
     {% if form.errors %}
