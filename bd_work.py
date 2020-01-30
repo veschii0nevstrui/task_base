@@ -9,6 +9,7 @@ from contextlib import contextmanager
 from flask_login import UserMixin, login_user, current_user
 
 from werkzeug.security import generate_password_hash, check_password_hash
+from pathlib import Path
 
 Base = declarative_base()
 
@@ -102,6 +103,7 @@ class Contest(Base):
 	description = Column(String())
 	link = Column(String(), nullable=False)
 	tutorial = Column(String())
+	statement = Column(String())
 
 	def __init__(self, d):
 		self.name = d.get('name', '')
@@ -109,6 +111,8 @@ class Contest(Base):
 		self.description = d.get('description', '')
 		self.link = d.get('link', '')
 		self.tutorial = d.get('tutorial', '')
+		if d.get('statement') != None:
+			self.statement = d.get('statement').data.filename
 
 	def __repr__(self):
 		return "<Contest('%s', '%s', '%s', '%s')>" % (self.id, self.name, self.year, self.link)
@@ -128,16 +132,11 @@ class Tasks_contest(Base):
 
 
 
-
-with open("param") as f:
-	debug = f.read()
-
-	if debug == 'test':
-		db = 'task_base_test'
-	else:
-		db = 'task_base'
+def check(file_path):
+	Path(file_path).mkdir(parents=True, exist_ok=True)
 
 
+db = 'task_base'
 engine = create_engine('mysql+pymysql://nevstrui:12345@localhost/%s' % db)
 Base.metadata.create_all(engine) #Я не понимаю, зачем эта строчка нужна, но в примерах она есть везде
 Session = sessionmaker(bind=engine)
@@ -364,6 +363,10 @@ def add_contest(contest):
 		if tasks != None:
 			for task in tasks:
 				session.add(Tasks_contest({'contest_id': c.id, 'task_id': task}))
+
+		path = 'data/contests/' + str(c.id) + '/'
+		check(path)
+		contest['statement'].data.save(path + contest['statement'].data.filename)
 
 def update_contest(contest, c_id):
 	tasks = contest.pop('tasks', None)

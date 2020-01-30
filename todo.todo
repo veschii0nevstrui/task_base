@@ -1,0 +1,2 @@
+mysql:
+alter table contests add statement varchar(1000);

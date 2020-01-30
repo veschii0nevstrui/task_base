@@ -112,6 +112,7 @@ def add_contest():
 
 	if form.validate_on_submit():
 		d = _to_dict(form)
+		d['statement'] = form.statement
 		form.add(d)
 		return redirect(url_for('table_contests'))
 
@@ -283,13 +284,5 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 
 	debug = args.debug
-	with open("param", "w") as f:
-		if (debug):
-			s = "test"
-		else:
-			s = "prod"
-		f.write(s)
 
-	print(s)
-
-	app.run(host="0.0.0.0", debug=False)
+	app.run(host="0.0.0.0", debug=debug)

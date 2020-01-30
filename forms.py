@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField, FormField, FieldList, SelectField, PasswordField, BooleanField
+from flask_wtf.file import FileField, FileAllowed
+from wtforms.fields import StringField, SubmitField, TextAreaField, FormField, FieldList, SelectField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, URL, Optional
 from bd_work import add_task, add_tag, add_contest, tag_list, task_list, contest_list
 
@@ -74,6 +75,7 @@ class ContestForm(FlaskForm):
 	year = StringField("Год: ", validators=[DataRequired()])
 	description = TextAreaField("Описание: ", validators=[DataRequired()])
 	link = StringField("Ссылка на контест: ", validators=[DataRequired(), URL()])
+	statement = FileField("Файл с условиями: ", validators=[FileAllowed(['pdf', 'jpg', 'cpp'])])
 	tutorial = StringField("Ссылка на разбор: ", validators=[Optional(), URL()])
 	tasks = FieldList(FormField(Task), min_entries=0, max_entries=20) #!!!
 	submit = SubmitField("Отправить")
